@@ -25,7 +25,7 @@
 html { scroll-behavior: smooth; scroll-padding-top: 84px; }
 
 body {
-    font-family: 'Manrope', system-ui, sans-serif;
+    font-family: 'Montserrat', system-ui, sans-serif;
     background: var(--bg);
     color: var(--txt);
     line-height: 1.6;
@@ -61,7 +61,7 @@ ul { list-style: none; }
 .kicker.center { margin-left: auto; margin-right: auto; }
 
 .section-title {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Montserrat', sans-serif;
     font-weight: 600;
     font-size: clamp(28px, 4vw, 46px);
     line-height: 1.15;
@@ -112,7 +112,7 @@ ul { list-style: none; }
 .brand-logo { width: 46px; height: auto; filter: drop-shadow(0 2px 8px rgba(201,162,75,0.25)); }
 .brand-text { display: flex; flex-direction: column; line-height: 1.1; }
 .brand-name {
-    font-family: 'Playfair Display', serif; font-weight: 700; font-size: 22px; letter-spacing: 0.04em;
+    font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 22px; letter-spacing: 0.04em;
     background: var(--gold-grad); -webkit-background-clip: text; background-clip: text; color: transparent;
 }
 .brand-sub { font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--txt-dim); }
@@ -161,14 +161,14 @@ ul { list-style: none; }
     display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 50px; align-items: center;
 }
 .hero-text h1 {
-    font-family: 'Playfair Display', serif; font-weight: 600;
+    font-family: 'Montserrat', sans-serif; font-weight: 600;
     font-size: clamp(34px, 5.2vw, 60px); line-height: 1.08; letter-spacing: -0.015em; margin-bottom: 22px;
 }
 .hero-lead { font-size: 18px; color: var(--txt-mut); max-width: 540px; margin-bottom: 32px; }
 .hero-actions { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 44px; }
 .hero-trust { display: flex; gap: 40px; flex-wrap: wrap; }
 .hero-trust div { display: flex; flex-direction: column; }
-.hero-trust b { font-family: 'Playfair Display', serif; font-size: 30px; color: var(--gold-2); }
+.hero-trust b { font-family: 'Montserrat', sans-serif; font-size: 30px; color: var(--gold-2); }
 .hero-trust span { font-size: 13px; color: var(--txt-dim); letter-spacing: 0.04em; }
 
 .hero-visual { display: flex; justify-content: center; }
@@ -191,7 +191,7 @@ ul { list-style: none; }
     padding: 22px; display: flex; gap: 14px; transition: border-color .25s, transform .25s;
 }
 .point:hover { border-color: var(--line); transform: translateY(-4px); }
-.point-num { font-family: 'Playfair Display', serif; color: var(--gold); font-size: 22px; }
+.point-num { font-family: 'Montserrat', sans-serif; color: var(--gold); font-size: 22px; }
 .point b { display: block; margin-bottom: 4px; }
 .point p { font-size: 14px; color: var(--txt-mut); margin: 0; }
 
@@ -207,7 +207,7 @@ ul { list-style: none; }
     content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--gold-grad); opacity: .6;
 }
 .fact:hover { transform: translateY(-6px); border-color: var(--gold); }
-.fact b { font-family: 'Playfair Display', serif; font-size: clamp(34px, 4vw, 50px); color: var(--gold-2); display: block; }
+.fact b { font-family: 'Montserrat', sans-serif; font-size: clamp(34px, 4vw, 50px); color: var(--gold-2); display: block; }
 .fact span { color: var(--txt-mut); font-size: 14px; }
 
 /* ---------- Pains ---------- */
@@ -238,7 +238,7 @@ ul { list-style: none; }
 .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; margin-top: 46px; }
 .step { position: relative; padding-top: 14px; }
 .step-n {
-    font-family: 'Playfair Display', serif; font-size: 56px; line-height: 1;
+    font-family: 'Montserrat', sans-serif; font-size: 56px; line-height: 1;
     color: transparent; -webkit-text-stroke: 1px var(--gold-3); display: block; margin-bottom: 14px;
 }
 .step h4 { font-size: 19px; margin-bottom: 8px; }
@@ -256,7 +256,7 @@ ul { list-style: none; }
     display: inline-block; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase;
     color: var(--gold-2); padding: 5px 12px; border: 1px solid var(--line); border-radius: 999px; margin-bottom: 16px;
 }
-.case h3 { font-family: 'Playfair Display', serif; font-size: 23px; color: var(--txt); margin-bottom: 10px; }
+.case h3 { font-family: 'Montserrat', sans-serif; font-size: 23px; color: var(--txt); margin-bottom: 10px; }
 .case p { color: var(--txt-mut); font-size: 15px; }
 
 /* ---------- Pricing ---------- */
@@ -278,8 +278,8 @@ ul { list-style: none; }
     padding: 6px 18px; border-radius: 999px; letter-spacing: 0.06em;
 }
 .plan h3 { font-size: 21px; margin-bottom: 14px; }
-.plan-price { font-family: 'Playfair Display', serif; font-size: 38px; color: var(--gold-2); margin-bottom: 8px; }
-.plan-price span { font-size: 15px; color: var(--txt-dim); font-family: 'Manrope'; }
+.plan-price { font-family: 'Montserrat', sans-serif; font-size: 38px; color: var(--gold-2); margin-bottom: 8px; }
+.plan-price span { font-size: 15px; color: var(--txt-dim); font-family: 'Montserrat'; }
 .plan-desc { color: var(--txt-mut); font-size: 15px; margin-bottom: 22px; min-height: 44px; }
 .plan ul { display: flex; flex-direction: column; gap: 12px; margin-bottom: 28px; flex: 1; }
 .plan li { position: relative; padding-left: 28px; color: var(--txt); font-size: 15px; }

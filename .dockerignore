@@ -1,0 +1,16 @@
+venv/
+__pycache__/
+*.pyc
+*.pyo
+.git/
+.gitignore
+db.sqlite3
+.env
+staticfiles/
+media/
+data/
+Фнк_gold.png
+*.log
+*.md
+.vscode/
+.idea/

@@ -1,0 +1,267 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% load main_extras %}
+
+{% block content %}
+
+<!-- ================= HERO ================= -->
+<section class="hero" id="hero">
+    <div class="hero-bg"></div>
+    <div class="container hero-inner">
+        <div class="hero-text reveal">
+            <span class="eyebrow">{{ site.hero_eyebrow }}</span>
+            <h1>{{ site.hero_title }}<br><span class="gold">{{ site.hero_title_gold }}</span></h1>
+            <p class="hero-lead">{{ site.hero_lead }}</p>
+            <div class="hero-actions">
+                <a href="#contact" class="btn btn-gold">{{ site.hero_btn_primary }}</a>
+                <a href="#services" class="btn btn-ghost">{{ site.hero_btn_secondary }}</a>
+            </div>
+            {% if trust_stats %}
+            <div class="hero-trust">
+                {% for stat in trust_stats %}
+                <div><b>{{ stat.value }}</b><span>{{ stat.label }}</span></div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+        <div class="hero-visual reveal">
+            <div class="hero-logo-frame">
+                <img src="{% static 'img/logo-full.jpg' %}" alt="Логотип {{ site.brand_name }}" class="hero-logo">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================= ABOUT ================= -->
+<section class="section" id="about">
+    <div class="container">
+        <div class="about-grid">
+            <div class="reveal">
+                <span class="kicker">{{ site.about_kicker }}</span>
+                <h2 class="section-title">{{ site.about_title }}</h2>
+                <p class="lead-muted">{{ site.about_text1 }}</p>
+                <p class="lead-muted">{{ site.about_text2 }}</p>
+                <a href="#contact" class="btn btn-gold-outline">{{ site.about_btn }}</a>
+            </div>
+            <div class="about-points reveal">
+                {% for point in about_points %}
+                <div class="point"><span class="point-num">{{ point.number }}</span><div><b>{{ point.title }}</b><p>{{ point.text }}</p></div></div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================= FACTS ================= -->
+{% if facts %}
+<section class="section section-dark" id="facts">
+    <div class="container">
+        <span class="kicker center">{{ site.facts_kicker }}</span>
+        <h2 class="section-title center">{{ site.facts_title }}</h2>
+        <div class="facts-grid">
+            {% for fact in facts %}
+            <div class="fact reveal"><b class="count" data-target="{{ fact.value }}" data-prefix="{{ fact.prefix }}" data-suffix="{{ fact.suffix }}">0</b><span>{{ fact.label }}</span></div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- ================= PAIN POINTS ================= -->
+{% if pains %}
+<section class="section" id="pains">
+    <div class="container">
+        <span class="kicker center">{{ site.pains_kicker }}</span>
+        <h2 class="section-title center">{{ site.pains_title }}</h2>
+        <div class="pains-grid">
+            {% for pain in pains %}
+            <div class="pain reveal">{{ pain.text }}</div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- ================= SERVICES ================= -->
+{% if services %}
+<section class="section section-dark" id="services">
+    <div class="container">
+        <span class="kicker center">{{ site.services_kicker }}</span>
+        <h2 class="section-title center">{{ site.services_title }}</h2>
+        {% if site.services_sub %}<p class="section-sub center">{{ site.services_sub }}</p>{% endif %}
+        <div class="services-grid">
+            {% for service in services %}
+            <div class="service reveal">
+                <div class="service-ico">{{ service.icon }}</div>
+                <h3>{{ service.title }}</h3>
+                <p>{{ service.text }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- ================= PROCESS ================= -->
+{% if steps %}
+<section class="section" id="process">
+    <div class="container">
+        <span class="kicker center">{{ site.process_kicker }}</span>
+        <h2 class="section-title center">{{ site.process_title }}</h2>
+        <div class="steps">
+            {% for step in steps %}
+            <div class="step reveal"><span class="step-n">{{ step.number }}</span><h4>{{ step.title }}</h4><p>{{ step.text }}</p></div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- ================= CASES ================= -->
+{% if cases %}
+<section class="section section-dark" id="cases">
+    <div class="container">
+        <span class="kicker center">{{ site.cases_kicker }}</span>
+        <h2 class="section-title center">{{ site.cases_title }}</h2>
+        {% if site.cases_sub %}<p class="section-sub center">{{ site.cases_sub }}</p>{% endif %}
+        <div class="cases-grid">
+            {% for case in cases %}
+            <div class="case reveal">
+                <span class="case-tag">{{ case.tag }}</span>
+                <h3>{{ case.title }}</h3>
+                <p>{{ case.text }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- ================= PRICING ================= -->
+{% if plans %}
+<section class="section" id="pricing">
+    <div class="container">
+        <span class="kicker center">{{ site.pricing_kicker }}</span>
+        <h2 class="section-title center">{{ site.pricing_title }}</h2>
+        {% if site.pricing_sub %}<p class="section-sub center">{{ site.pricing_sub }}</p>{% endif %}
+        <div class="pricing-grid">
+            {% for plan in plans %}
+            <div class="plan {% if plan.is_featured %}plan-featured{% endif %} reveal">
+                {% if plan.badge %}<span class="plan-badge">{{ plan.badge }}</span>{% endif %}
+                <h3>{{ plan.name }}</h3>
+                <div class="plan-price">{{ plan.price }}{% if plan.period %}<span>{{ plan.period }}</span>{% endif %}</div>
+                <p class="plan-desc">{{ plan.description }}</p>
+                <ul>
+                    {% for feature in plan.features.splitlines %}
+                        {% if feature.strip %}<li>{{ feature }}</li>{% endif %}
+                    {% endfor %}
+                </ul>
+                <a href="#contact" class="btn {% if plan.is_featured %}btn-gold{% else %}btn-ghost{% endif %} full" data-plan="{{ plan.plan_key }}">{{ plan.button_text }}</a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- ================= REVIEWS ================= -->
+{% if reviews %}
+<section class="section section-dark" id="reviews">
+    <div class="container">
+        <span class="kicker center">{{ site.reviews_kicker }}</span>
+        <h2 class="section-title center">{{ site.reviews_title }}</h2>
+        <div class="reviews-grid">
+            {% for review in reviews %}
+            <div class="review reveal">
+                <div class="stars">{{ review.stars_display }}</div>
+                <p>{{ review.text }}</p>
+                <div class="review-author"><b>{{ review.author_name }}</b><span>{{ review.author_role }}</span></div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- ================= FAQ ================= -->
+{% if faqs %}
+<section class="section" id="faq">
+    <div class="container narrow">
+        <span class="kicker center">{{ site.faq_kicker }}</span>
+        <h2 class="section-title center">{{ site.faq_title }}</h2>
+        <div class="faq">
+            {% for item in faqs %}
+            <div class="faq-item reveal">
+                <button class="faq-q">{{ item.question }}<span class="faq-ic">+</span></button>
+                <div class="faq-a"><p>{{ item.answer }}</p></div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- ================= CONTACT / FORM ================= -->
+<section class="section contact" id="contact">
+    <div class="container contact-grid">
+        <div class="contact-info reveal">
+            <span class="kicker">{{ site.contact_kicker }}</span>
+            <h2 class="section-title">{{ site.contact_title }}</h2>
+            <p class="lead-muted">{{ site.contact_lead }}</p>
+            <ul class="contact-list">
+                <li><span>Телефон</span><a href="tel:{{ site.phone|tel }}">{{ site.phone }}</a></li>
+                <li><span>E-mail</span><a href="mailto:{{ site.email }}">{{ site.email }}</a></li>
+                <li><span>Адрес</span><a href="#">{{ site.address }}</a></li>
+                <li><span>График</span><span class="muted">{{ site.work_hours }}</span></li>
+            </ul>
+        </div>
+
+        <div class="contact-form-wrap reveal">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+
+            <form class="contact-form" id="consultForm" method="post" action="{% url 'submit_request' %}" novalidate>
+                {% csrf_token %}
+                <div style="position:absolute;left:-9999px" aria-hidden="true">
+                    {{ form.website }}
+                </div>
+
+                <div class="field">
+                    {{ form.name }}
+                    <div class="field-error" data-for="name"></div>
+                </div>
+                <div class="field-row">
+                    <div class="field">
+                        {{ form.phone }}
+                        <div class="field-error" data-for="phone"></div>
+                    </div>
+                    <div class="field">
+                        {{ form.email }}
+                        <div class="field-error" data-for="email"></div>
+                    </div>
+                </div>
+                <div class="field">
+                    {{ form.company }}
+                    <div class="field-error" data-for="company"></div>
+                </div>
+                <div class="field">
+                    <label class="field-label" for="id_plan">Интересующий формат</label>
+                    {{ form.plan }}
+                </div>
+                <div class="field">
+                    {{ form.message }}
+                    <div class="field-error" data-for="message"></div>
+                </div>
+
+                <button type="submit" class="btn btn-gold full" id="submitBtn">Отправить заявку</button>
+                <p class="form-note">Нажимая кнопку, вы соглашаетесь с обработкой персональных данных.</p>
+                <div class="form-result" id="formResult" role="status"></div>
+            </form>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

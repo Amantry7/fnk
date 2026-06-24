@@ -1,0 +1,35 @@
+{% load main_extras %}
+<footer class="site-footer">
+    <div class="container footer-grid">
+        <div class="footer-brand">
+            <span class="brand-name">{{ site.brand_name }}</span>
+            <p class="footer-desc">{{ site.footer_desc }}</p>
+        </div>
+
+        <div class="footer-col">
+            <h4>{{ site.footer_nav_title }}</h4>
+            {% for link in nav_links %}
+                <a href="{{ link.anchor }}">{{ link.label }}</a>
+            {% endfor %}
+        </div>
+
+        <div class="footer-col">
+            <h4>{{ site.footer_contacts_title }}</h4>
+            <a href="tel:{{ site.phone|tel }}">{{ site.phone }}</a>
+            <a href="mailto:{{ site.email }}">{{ site.email }}</a>
+            <a href="#">{{ site.address }}</a>
+            <span class="muted">{{ site.work_hours }}</span>
+        </div>
+
+        <div class="footer-col">
+            <h4>{{ site.footer_social_title }}</h4>
+            {% for s in social_links %}
+                <a href="{{ s.url }}" target="_blank" rel="noopener">{{ s.label }}</a>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="container footer-bottom">
+        <span>© {% now "Y" %} {{ site.footer_copyright }}</span>
+        <span class="muted">{{ site.footer_disclaimer }}</span>
+    </div>
+</footer>

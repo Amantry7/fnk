@@ -1,0 +1,23 @@
+{% load static %}
+<header class="site-header" id="siteHeader">
+    <div class="container header-inner">
+        <a href="#hero" class="brand" aria-label="{{ site.brand_name }} — на главную">
+            <img src="{% static 'img/logo-sm.png' %}" alt="{{ site.brand_name }}" class="brand-logo">
+            <span class="brand-text">
+                <span class="brand-name">{{ site.brand_name }}</span>
+                <span class="brand-sub">{{ site.brand_sub }}</span>
+            </span>
+        </a>
+
+        <nav class="nav" id="nav">
+            {% for link in nav_links %}
+                <a href="{{ link.anchor }}">{{ link.label }}</a>
+            {% endfor %}
+            <a href="#contact" class="nav-cta">{{ site.nav_cta_text }}</a>
+        </nav>
+
+        <button class="burger" id="burger" aria-label="Меню" aria-expanded="false">
+            <span></span><span></span><span></span>
+        </button>
+    </div>
+</header>

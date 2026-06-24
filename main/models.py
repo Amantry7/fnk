@@ -226,7 +226,17 @@ class Pain(OrderedItem):
 
 # --- Услуги ---
 class Service(OrderedItem):
-    icon = models.CharField('Иконка (эмодзи)', max_length=10, default='📊')
+    ICON_CHOICES = [
+        ('chart', 'Столбчатый график'),
+        ('growth', 'Рост / тренд'),
+        ('tax', 'Документ / налоги'),
+        ('audit', 'Лупа / аудит'),
+        ('briefcase', 'Портфель'),
+        ('users', 'Люди / сопровождение'),
+    ]
+    icon = models.CharField('Иконка (SVG)', max_length=30, default='chart',
+                            choices=ICON_CHOICES,
+                            help_text='Какой SVG показать в карточке услуги')
     title = models.CharField('Заголовок', max_length=80)
     text = models.CharField('Описание', max_length=255)
 

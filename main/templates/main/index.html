@@ -92,7 +92,7 @@
         <div class="services-grid">
             {% for service in services %}
             <div class="service reveal">
-                <div class="service-ico">{{ service.icon }}</div>
+                <div class="service-ico">{% include 'main/_service_icon.html' with slug=service.icon %}</div>
                 <h3>{{ service.title }}</h3>
                 <p>{{ service.text }}</p>
             </div>

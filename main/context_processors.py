@@ -1,6 +1,7 @@
 from .models import (
-    AboutPoint, Case, FAQ, Fact, NavLink, Pain, Plan, Review, Service,
-    SiteSettings, SocialLink, Step, TrustStat,
+    AboutPoint, Case, FAQ, Fact, ImportantItem, NavLink, News, Pain, Plan,
+    QuickLink, Review, Service, SiteSettings, SocialLink, Step, TickerItem,
+    TrustStat, Vacancy,
 )
 
 
@@ -20,4 +21,9 @@ def site_content(request):
         'plans': Plan.objects.filter(is_active=True),
         'reviews': Review.objects.filter(is_active=True),
         'faqs': FAQ.objects.filter(is_active=True),
+        'news_items': News.objects.filter(is_active=True)[:12],
+        'important_items': ImportantItem.objects.filter(is_active=True),
+        'ticker_items': TickerItem.objects.filter(is_active=True),
+        'quick_links': QuickLink.objects.filter(is_active=True),
+        'vacancies': Vacancy.objects.filter(is_active=True),
     }

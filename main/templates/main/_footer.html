@@ -9,7 +9,7 @@
         <div class="footer-col">
             <h4>{{ site.footer_nav_title }}</h4>
             {% for link in nav_links %}
-                <a href="{{ link.anchor }}">{{ link.label }}</a>
+                <a href="{% url 'index' %}{{ link.anchor }}">{{ link.label }}</a>
             {% endfor %}
         </div>
 

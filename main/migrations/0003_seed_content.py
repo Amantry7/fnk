@@ -34,6 +34,7 @@ def seed(apps, schema_editor):
         {'label': 'Кейсы', 'anchor': '#cases'},
         {'label': 'Форматы', 'anchor': '#pricing'},
         {'label': 'Вопросы', 'anchor': '#faq'},
+        {'label': 'Контакты', 'anchor': '#contact'},
     ])
 
     fill(SocialLink, [
@@ -108,7 +109,7 @@ def seed(apps, schema_editor):
         {'name': 'Расширенный', 'price': 'от $1 500', 'period': '/ мес', 'plan_key': 'extended',
          'description': 'Системная финансовая функция для растущей компании.', 'is_featured': True, 'badge': 'Популярный',
          'features': 'Всё из «Базового»\nФинансовая модель и планирование\nЮнит-экономика по направлениям\nПлатёжный календарь\nЕжемесячные разборы с собственником'},
-        {'name': 'VIP / Сопровождение', 'price': 'от $3 000', 'period': '/ мес', 'plan_key': 'vip',
+        {'name': 'Премиум', 'price': 'от $3 000', 'period': '/ мес', 'plan_key': 'vip',
          'description': 'Внешний финансовый директор и полное сопровождение.', 'is_featured': False,
          'features': 'Всё из «Расширенного»\nВыделенный финдиректор\nКонсолидация по группе компаний\nПривлечение финансирования\nНалоговое планирование'},
     ])

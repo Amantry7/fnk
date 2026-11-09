@@ -1,19 +1,26 @@
 {% load static %}
 <header class="site-header" id="siteHeader">
     <div class="container header-inner">
-        <a href="#hero" class="brand" aria-label="{{ site.brand_name }} — на главную">
-            <img src="{% static 'img/logo-sm.png' %}" alt="{{ site.brand_name }}" class="brand-logo">
+        <div class="brand">
+            <a href="{% url 'index' %}#hero" class="brand-logo-link" aria-label="{{ site.brand_name }} — на главную">
+                <img src="{% static 'img/logo-sm.png' %}" alt="{{ site.brand_name }}" class="brand-logo">
+            </a>
             <span class="brand-text">
-                <span class="brand-name">{{ site.brand_name }}</span>
+                {% if site.company_url %}
+                <a href="{{ site.company_url }}" target="_blank" rel="noopener" class="brand-name"
+                   title="Страница компании в каталоге B-Council">{{ site.brand_name }}</a>
+                {% else %}
+                <a href="{% url 'index' %}#hero" class="brand-name">{{ site.brand_name }}</a>
+                {% endif %}
                 <span class="brand-sub">{{ site.brand_sub }}</span>
             </span>
-        </a>
+        </div>
 
         <nav class="nav" id="nav">
             {% for link in nav_links %}
-                <a href="{{ link.anchor }}">{{ link.label }}</a>
+                <a href="{% url 'index' %}{{ link.anchor }}">{{ link.label }}</a>
             {% endfor %}
-            <a href="#contact" class="nav-cta">{{ site.nav_cta_text }}</a>
+            <a href="{% url 'index' %}#contact" class="nav-cta">{{ site.nav_cta_text }}</a>
         </nav>
 
         <button class="burger" id="burger" aria-label="Меню" aria-expanded="false">

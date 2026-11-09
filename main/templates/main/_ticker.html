@@ -1,0 +1,23 @@
+{% if site.ticker_enabled and ticker_items %}
+<div class="ticker" style="--ticker-duration: {{ site.ticker_speed }}s" aria-label="Информационная лента">
+    {% if site.ticker_label %}<div class="ticker-label">{{ site.ticker_label }}</div>{% endif %}
+    <div class="ticker-viewport">
+        <div class="ticker-track">
+            {% for t in ticker_items %}
+            <span class="ticker-item ticker-{{ t.category }}">
+                {% if t.link %}<a href="{{ t.link }}">{% endif %}
+                <i class="ticker-dot"></i><b>{{ t.get_category_display }}:</b> {{ t.text }}
+                {% if t.link %}</a>{% endif %}
+            </span>
+            {% endfor %}
+            {% for t in ticker_items %}
+            <span class="ticker-item ticker-{{ t.category }}" aria-hidden="true">
+                {% if t.link %}<a href="{{ t.link }}">{% endif %}
+                <i class="ticker-dot"></i><b>{{ t.get_category_display }}:</b> {{ t.text }}
+                {% if t.link %}</a>{% endif %}
+            </span>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}

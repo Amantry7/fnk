@@ -82,4 +82,35 @@ python manage.py runserver
 - `DEBUG=False`
 - укажите домен в `ALLOWED_HOSTS`
 - выполните `python manage.py collectstatic`
-- настройте отправку заявок на почту/Telegram при необходимости
+- настройте почту (см. ниже), иначе заявки будут только в админке
+
+## Заявки на почту
+Каждая заявка из формы «Оставить заявку» сохраняется в базе **и** отправляется
+письмом. Настраивается в `.env`:
+
+```
+EMAIL_HOST=smtp.yandex.ru        # SMTP вашего почтового сервиса
+EMAIL_PORT=465
+EMAIL_USE_SSL=True               # для порта 465; для 587 — EMAIL_USE_TLS=True, EMAIL_USE_SSL=False
+EMAIL_HOST_USER=info@fnk.kg      # логин (полный адрес ящика)
+EMAIL_HOST_PASSWORD=...          # пароль ПРИЛОЖЕНИЯ, не от входа в почту
+DEFAULT_FROM_EMAIL=info@fnk.kg   # от кого (обычно = EMAIL_HOST_USER)
+REQUEST_NOTIFY_EMAILS=info@fnk.kg,director@fnk.kg   # кому (через запятую)
+```
+
+- Если `REQUEST_NOTIFY_EMAILS` пустой — письма идут на E-mail из
+  «Настроек сайта» в админке.
+- Если `EMAIL_HOST` пустой — письма печатаются в консоль (режим разработки).
+- Параметры SMTP: Gmail `smtp.gmail.com:587 TLS`, Yandex `smtp.yandex.ru:465 SSL`,
+  Mail.ru `smtp.mail.ru:465 SSL`. У всех нужен «пароль приложения»,
+  выдаётся в настройках безопасности ящика (для Gmail требуется включённая
+  двухфакторная аутентификация).
+- В письме стоит `Reply-To` клиента — можно отвечать прямо из почты.
+- Ошибка почты не ломает форму: заявка всё равно сохраняется, а причина пишется в лог.
+
+Проверка связки после настройки `.env` (в Docker: `docker compose exec web ...`):
+```bash
+python manage.py test_request_email
+python manage.py test_request_email --to you@example.com
+```
+После изменения `.env` в Docker перезапустите контейнер: `docker compose up -d`.

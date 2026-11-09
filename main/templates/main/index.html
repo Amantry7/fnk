@@ -4,7 +4,8 @@
 
 {% block content %}
 
-<!-- ================= HERO ================= -->
+<!-- ================= HERO (первый экран) ================= -->
+<div class="first-screen">
 <section class="hero" id="hero">
     <div class="hero-bg"></div>
     <div class="container hero-inner">
@@ -32,7 +33,12 @@
     </div>
 </section>
 
+{% include 'main/_ticker.html' %}
+</div>
+<!-- ================= /первый экран ================= -->
+
 <!-- ================= ABOUT ================= -->
+{% if site.show_about %}
 <section class="section" id="about">
     <div class="container">
         <div class="about-grid">
@@ -51,9 +57,10 @@
         </div>
     </div>
 </section>
+{% endif %}
 
 <!-- ================= FACTS ================= -->
-{% if facts %}
+{% if site.show_facts and facts %}
 <section class="section section-dark" id="facts">
     <div class="container">
         <span class="kicker center">{{ site.facts_kicker }}</span>
@@ -68,7 +75,7 @@
 {% endif %}
 
 <!-- ================= PAIN POINTS ================= -->
-{% if pains %}
+{% if site.show_pains and pains %}
 <section class="section" id="pains">
     <div class="container">
         <span class="kicker center">{{ site.pains_kicker }}</span>
@@ -83,27 +90,30 @@
 {% endif %}
 
 <!-- ================= SERVICES ================= -->
-{% if services %}
+{% if site.show_services and services %}
 <section class="section section-dark" id="services">
     <div class="container">
         <span class="kicker center">{{ site.services_kicker }}</span>
         <h2 class="section-title center">{{ site.services_title }}</h2>
         {% if site.services_sub %}<p class="section-sub center">{{ site.services_sub }}</p>{% endif %}
-        <div class="services-grid">
-            {% for service in services %}
-            <div class="service reveal">
-                <div class="service-ico">{% include 'main/_service_icon.html' with slug=service.icon %}</div>
-                <h3>{{ service.title }}</h3>
-                <p>{{ service.text }}</p>
+        {% if site.services_animated %}
+        <div class="services-marquee" style="--services-duration: {{ site.services_speed }}s">
+            <div class="services-track">
+                {% for service in services %}{% include 'main/_service_card.html' %}{% endfor %}
+                {% for service in services %}{% include 'main/_service_card.html' %}{% endfor %}
             </div>
-            {% endfor %}
         </div>
+        {% else %}
+        <div class="services-grid">
+            {% for service in services %}{% include 'main/_service_card.html' %}{% endfor %}
+        </div>
+        {% endif %}
     </div>
 </section>
 {% endif %}
 
 <!-- ================= PROCESS ================= -->
-{% if steps %}
+{% if site.show_process and steps %}
 <section class="section" id="process">
     <div class="container">
         <span class="kicker center">{{ site.process_kicker }}</span>
@@ -118,7 +128,7 @@
 {% endif %}
 
 <!-- ================= CASES ================= -->
-{% if cases %}
+{% if site.show_cases and cases %}
 <section class="section section-dark" id="cases">
     <div class="container">
         <span class="kicker center">{{ site.cases_kicker }}</span>
@@ -138,7 +148,7 @@
 {% endif %}
 
 <!-- ================= PRICING ================= -->
-{% if plans %}
+{% if site.show_pricing and plans %}
 <section class="section" id="pricing">
     <div class="container">
         <span class="kicker center">{{ site.pricing_kicker }}</span>
@@ -146,7 +156,12 @@
         {% if site.pricing_sub %}<p class="section-sub center">{{ site.pricing_sub }}</p>{% endif %}
         <div class="pricing-grid">
             {% for plan in plans %}
-            <div class="plan {% if plan.is_featured %}plan-featured{% endif %} reveal">
+            <div class="plan {% if plan.is_featured %}plan-featured{% endif %}{% if plan.plan_key == 'vip' %} plan-premium{% endif %} reveal">
+                {% if plan.plan_key == 'vip' %}
+                <span class="plan-crown" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8l4.5 3.5L12 5l4.5 6.5L21 8l-1.8 10.2a1 1 0 0 1-1 .8H5.8a1 1 0 0 1-1-.8L3 8Z"/><circle cx="12" cy="3" r="1"/><circle cx="3" cy="7" r="1"/><circle cx="21" cy="7" r="1"/></svg>
+                </span>
+                {% endif %}
                 {% if plan.badge %}<span class="plan-badge">{{ plan.badge }}</span>{% endif %}
                 <h3>{{ plan.name }}</h3>
                 <div class="plan-price">{{ plan.price }}{% if plan.period %}<span>{{ plan.period }}</span>{% endif %}</div>
@@ -156,7 +171,7 @@
                         {% if feature.strip %}<li>{{ feature }}</li>{% endif %}
                     {% endfor %}
                 </ul>
-                <a href="#contact" class="btn {% if plan.is_featured %}btn-gold{% else %}btn-ghost{% endif %} full" data-plan="{{ plan.plan_key }}">{{ plan.button_text }}</a>
+                <a href="#contact" class="btn {% if plan.is_featured or plan.plan_key == 'vip' %}btn-gold{% else %}btn-ghost{% endif %} full" data-plan="{{ plan.plan_key }}">{{ plan.button_text }}</a>
             </div>
             {% endfor %}
         </div>
@@ -165,26 +180,29 @@
 {% endif %}
 
 <!-- ================= REVIEWS ================= -->
-{% if reviews %}
+{% if site.show_reviews and reviews %}
 <section class="section section-dark" id="reviews">
     <div class="container">
         <span class="kicker center">{{ site.reviews_kicker }}</span>
         <h2 class="section-title center">{{ site.reviews_title }}</h2>
-        <div class="reviews-grid">
-            {% for review in reviews %}
-            <div class="review reveal">
-                <div class="stars">{{ review.stars_display }}</div>
-                <p>{{ review.text }}</p>
-                <div class="review-author"><b>{{ review.author_name }}</b><span>{{ review.author_role }}</span></div>
+        {% if site.reviews_animated %}
+        <div class="marquee reviews-marquee" style="--m-duration: {{ site.reviews_speed }}s">
+            <div class="marquee-track">
+                {% for review in reviews %}{% include 'main/_review_card.html' %}{% endfor %}
+                {% for review in reviews %}{% include 'main/_review_card.html' %}{% endfor %}
             </div>
-            {% endfor %}
         </div>
+        {% else %}
+        <div class="reviews-grid">
+            {% for review in reviews %}{% include 'main/_review_card.html' %}{% endfor %}
+        </div>
+        {% endif %}
     </div>
 </section>
 {% endif %}
 
 <!-- ================= FAQ ================= -->
-{% if faqs %}
+{% if site.show_faq and faqs %}
 <section class="section" id="faq">
     <div class="container narrow">
         <span class="kicker center">{{ site.faq_kicker }}</span>
@@ -201,7 +219,81 @@
 </section>
 {% endif %}
 
+<!-- ================= NEWS ================= -->
+{% if site.show_news and news_items %}
+<section class="section" id="news">
+    <div class="container">
+        <span class="kicker center">{{ site.news_kicker }}</span>
+        <h2 class="section-title center">{{ site.news_title }}</h2>
+        {% if site.news_sub %}<p class="section-sub center">{{ site.news_sub }}</p>{% endif %}
+        {% if site.news_animated %}
+        <div class="marquee news-marquee" style="--m-duration: {{ site.news_speed }}s">
+            <div class="marquee-track">
+                {% for n in news_items %}{% include 'main/_news_card.html' %}{% endfor %}
+                {% for n in news_items %}{% include 'main/_news_card.html' %}{% endfor %}
+            </div>
+        </div>
+        {% else %}
+        <div class="news-grid">
+            {% for n in news_items %}{% include 'main/_news_card.html' %}{% endfor %}
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endif %}
+
+<!-- ================= IMPORTANT ================= -->
+{% if site.show_important and important_items %}
+<section class="section section-dark" id="important">
+    <div class="container">
+        <span class="kicker center">{{ site.important_kicker }}</span>
+        <h2 class="section-title center">{{ site.important_title }}</h2>
+        <div class="important-grid">
+            {% for it in important_items %}
+            <div class="important-card reveal">
+                <span class="important-ic" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg>
+                </span>
+                <div>
+                    <b>{{ it.title }}</b>
+                    {% if it.text %}<p>{{ it.text }}</p>{% endif %}
+                    {% if it.link %}<a href="{{ it.link }}" class="important-link">Подробнее →</a>{% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- ================= VACANCIES ================= -->
+{% if site.show_vacancies and vacancies %}
+<section class="section" id="vacancies">
+    <div class="container narrow">
+        <span class="kicker center">{{ site.vacancies_kicker }}</span>
+        <h2 class="section-title center">{{ site.vacancies_title }}</h2>
+        <div class="vacancies-list">
+            {% for v in vacancies %}
+            <div class="vacancy reveal">
+                <div class="vacancy-main">
+                    <h3>{{ v.title }}</h3>
+                    <div class="vacancy-meta">
+                        {% if v.location %}<span>{{ v.location }}</span>{% endif %}
+                        {% if v.employment %}<span>{{ v.employment }}</span>{% endif %}
+                        {% if v.salary %}<span class="vacancy-salary">{{ v.salary }}</span>{% endif %}
+                    </div>
+                    {% if v.description %}<p>{{ v.description }}</p>{% endif %}
+                </div>
+                <a href="#contact" class="btn btn-gold-outline">Откликнуться</a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
 <!-- ================= CONTACT / FORM ================= -->
+{% if site.show_contact %}
 <section class="section contact" id="contact">
     <div class="container contact-grid">
         <div class="contact-info reveal">
@@ -263,5 +355,6 @@
         </div>
     </div>
 </section>
+{% endif %}
 
 {% endblock %}

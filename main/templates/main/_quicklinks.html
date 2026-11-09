@@ -1,0 +1,14 @@
+{% if site.quicklinks_enabled and quick_links %}
+<nav class="quickbar" aria-label="Быстрые ссылки">
+    {% for q in quick_links %}
+    <a class="quickbar-item qk-{{ q.kind }}" href="{{ q.href }}" title="{{ q.label }}"
+       {% if q.is_external %}target="_blank" rel="noopener"{% endif %}>
+        {% if q.custom_icon %}
+            <img src="{{ q.custom_icon.url }}" alt="{{ q.label }}">
+        {% else %}
+            {% include 'main/_quicklink_icon.html' with kind=q.kind %}
+        {% endif %}
+    </a>
+    {% endfor %}
+</nav>
+{% endif %}

@@ -1,8 +1,9 @@
 from django.contrib import admin
 
 from .models import (
-    AboutPoint, Case, ConsultRequest, FAQ, Fact, NavLink, Pain, Plan,
-    Review, Service, SiteSettings, SocialLink, Step, TrustStat,
+    AboutPoint, Case, ConsultRequest, FAQ, Fact, ImportantItem, NavLink, News,
+    NewsSource, Pain, Plan, QuickLink, Review, Service, SiteSettings, SocialLink,
+    Step, TickerItem, TrustStat, Vacancy,
 )
 
 
@@ -50,6 +51,25 @@ class SiteSettingsAdmin(admin.ModelAdmin):
         ('Подвал', {'fields': (
             'footer_desc', 'footer_nav_title', 'footer_contacts_title',
             'footer_social_title', 'footer_copyright', 'footer_disclaimer')}),
+        ('Новости и «Важное»', {'fields': (
+            'news_kicker', 'news_title', 'news_sub',
+            'important_kicker', 'important_title')}),
+        ('Движущаяся лента', {'fields': (
+            'ticker_enabled', 'ticker_speed', 'ticker_label')}),
+        ('Анимация карточек (карусели)', {'fields': (
+            'services_animated', 'services_speed',
+            'reviews_animated', 'reviews_speed',
+            'news_animated', 'news_speed')}),
+        ('SEO', {'fields': ('meta_title', 'meta_description', 'seo_keywords', 'og_image')}),
+        ('Компания и быстрые ссылки', {'fields': ('company_url', 'quicklinks_enabled')}),
+        ('Вакансии', {'fields': ('vacancies_kicker', 'vacancies_title')}),
+        ('Видимость разделов (скрыть/показать)', {
+            'classes': ('collapse',),
+            'fields': (
+                'show_about', 'show_facts', 'show_pains', 'show_services',
+                'show_process', 'show_cases', 'show_pricing', 'show_reviews',
+                'show_faq', 'show_news', 'show_important', 'show_vacancies',
+                'show_contact')}),
     )
 
     def has_add_permission(self, request):
@@ -138,6 +158,55 @@ class ReviewAdmin(OrderedAdmin):
 class FAQAdmin(OrderedAdmin):
     list_display = ('question', 'order', 'is_active')
     list_editable = ('order', 'is_active')
+
+
+@admin.register(News)
+class NewsAdmin(admin.ModelAdmin):
+    list_display = ('title', 'published_at', 'is_pinned', 'is_active', 'source')
+    list_filter = ('is_active', 'is_pinned', 'source', 'published_at')
+    list_editable = ('is_pinned', 'is_active')
+    search_fields = ('title', 'excerpt', 'body')
+    date_hierarchy = 'published_at'
+    prepopulated_fields = {'slug': ('title',)}
+    fieldsets = (
+        (None, {'fields': ('title', 'slug', 'excerpt', 'body', 'image')}),
+        ('Публикация', {'fields': ('published_at', 'is_pinned', 'is_active')}),
+        ('Источник (для автозагрузки)', {'fields': ('source', 'source_url')}),
+    )
+
+
+@admin.register(NewsSource)
+class NewsSourceAdmin(admin.ModelAdmin):
+    list_display = ('name', 'feed_url', 'is_active', 'last_fetched')
+    list_editable = ('is_active',)
+    readonly_fields = ('last_fetched',)
+
+
+@admin.register(ImportantItem)
+class ImportantItemAdmin(OrderedAdmin):
+    list_display = ('title', 'order', 'is_active')
+    list_editable = ('order', 'is_active')
+
+
+@admin.register(TickerItem)
+class TickerItemAdmin(OrderedAdmin):
+    list_display = ('text', 'category', 'order', 'is_active')
+    list_filter = ('category', 'is_active')
+    list_editable = ('category', 'order', 'is_active')
+
+
+@admin.register(QuickLink)
+class QuickLinkAdmin(OrderedAdmin):
+    list_display = ('kind', 'value', 'order', 'is_active')
+    list_filter = ('kind', 'is_active')
+    list_editable = ('order', 'is_active')
+
+
+@admin.register(Vacancy)
+class VacancyAdmin(OrderedAdmin):
+    list_display = ('title', 'location', 'employment', 'order', 'is_active')
+    list_editable = ('order', 'is_active')
+    search_fields = ('title', 'description')
 
 
 admin.site.site_header = 'ФНК — администрирование'

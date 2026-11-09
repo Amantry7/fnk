@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sitemaps',
     'main',
 ]
 
@@ -164,3 +165,49 @@ if not DEBUG:
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
     SECURE_CONTENT_TYPE_NOSNIFF = True
+
+
+# ============================================================
+#  Почта — уведомления о заявках с формы «Оставить заявку»
+# ============================================================
+# Все параметры берутся из .env. Если EMAIL_HOST не задан — письма
+# печатаются в консоль (удобно при локальной разработке).
+def _env(name, default=''):
+    # Пустое значение в .env (EMAIL_HOST=) считаем незаданным
+    return (os.getenv(name) or '').strip() or default
+
+
+EMAIL_HOST = _env('EMAIL_HOST')
+EMAIL_PORT = int(_env('EMAIL_PORT', '587'))
+EMAIL_HOST_USER = _env('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
+EMAIL_USE_TLS = _env('EMAIL_USE_TLS', 'True') == 'True'
+EMAIL_USE_SSL = _env('EMAIL_USE_SSL', 'False') == 'True'
+EMAIL_TIMEOUT = int(_env('EMAIL_TIMEOUT', '15'))
+
+EMAIL_BACKEND = (
+    'django.core.mail.backends.smtp.EmailBackend'
+    if EMAIL_HOST
+    else 'django.core.mail.backends.console.EmailBackend'
+)
+
+# От кого приходят письма (для большинства SMTP должен совпадать с логином)
+DEFAULT_FROM_EMAIL = _env('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER or 'noreply@localhost')
+SERVER_EMAIL = DEFAULT_FROM_EMAIL
+
+# Куда слать заявки: несколько адресов через запятую.
+# Если пусто — используется E-mail из «Настроек сайта» в админке.
+REQUEST_NOTIFY_EMAILS = [
+    e.strip() for e in os.getenv('REQUEST_NOTIFY_EMAILS', '').split(',') if e.strip()
+]
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {'class': 'logging.StreamHandler'},
+    },
+    'loggers': {
+        'main': {'handlers': ['console'], 'level': 'INFO', 'propagate': False},
+    },
+}

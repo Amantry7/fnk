@@ -1,0 +1,16 @@
+<a href="{{ n.get_absolute_url }}" class="news-card reveal">
+    {% if n.image %}
+    <div class="news-img"><img src="{{ n.image.url }}" alt="{{ n.title }}" loading="lazy"></div>
+    {% else %}
+    <div class="news-img news-img-empty"><span>{{ site.brand_name }}</span></div>
+    {% endif %}
+    <div class="news-body">
+        <div class="news-meta">
+            <span class="news-date">{{ n.published_at|date:"d.m.Y" }}</span>
+            {% if n.is_pinned %}<span class="news-pin">Важно</span>{% endif %}
+        </div>
+        <h3>{{ n.title }}</h3>
+        {% if n.excerpt %}<p>{{ n.excerpt }}</p>{% endif %}
+        <span class="news-more">Читать →</span>
+    </div>
+</a>

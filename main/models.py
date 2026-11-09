@@ -1,4 +1,11 @@
+import re
+from urllib.parse import quote
+
 from django.db import models
+from django.urls import reverse
+from django.utils import timezone
+
+from .utils import ru_slugify
 
 
 # ============================================================
@@ -114,6 +121,68 @@ class SiteSettings(models.Model):
     footer_social_title = models.CharField('Подвал · заголовок «Соцсети»', max_length=60, default='Мы в сети')
     footer_copyright = models.CharField('Подвал · копирайт (без года)', max_length=160, default='ФНК. Все права защищены.')
     footer_disclaimer = models.CharField('Подвал · дисклеймер', max_length=255, blank=True, default='Сайт носит информационный характер и не является публичной офертой.')
+
+    # --- Новости ---
+    news_kicker = models.CharField('Новости · надзаголовок', max_length=80, default='Новости')
+    news_title = models.CharField('Новости · заголовок', max_length=200, default='Новости и события')
+    news_sub = models.CharField('Новости · подзаголовок', max_length=255, blank=True, default='Актуальные материалы, изменения в законодательстве и практика.')
+
+    # --- Важное ---
+    important_kicker = models.CharField('Важное · надзаголовок', max_length=80, default='Важное')
+    important_title = models.CharField('Важное · заголовок', max_length=200, default='Важная информация')
+
+    # --- Движущаяся информационная лента ---
+    ticker_enabled = models.BooleanField('Лента: включена', default=True)
+    ticker_speed = models.PositiveIntegerField('Лента: длительность прокрутки, сек', default=30,
+                                               help_text='Больше значение — медленнее движение')
+    ticker_label = models.CharField('Лента: подпись слева', max_length=40, blank=True, default='Актуально')
+
+    # --- SEO ---
+    meta_title = models.CharField('SEO · Title', max_length=200, blank=True,
+                                  help_text='Заголовок вкладки/выдачи. Пусто — стандартный.')
+    meta_description = models.CharField('SEO · Description', max_length=300, blank=True,
+                                        help_text='Описание для поиска и соцсетей. Пусто — из Hero.')
+    seo_keywords = models.CharField('SEO · Keywords', max_length=300, blank=True)
+    og_image = models.ImageField('SEO · картинка для соцсетей (OG)', upload_to='seo/', blank=True, null=True,
+                                 help_text='Пусто — используется логотип')
+
+    # --- Переход на страницу компании (B-Council) ---
+    company_url = models.URLField('Ссылка на компанию в каталоге B-Council', blank=True,
+                                  help_text='Клик по названию компании ведёт сюда')
+
+    # --- Анимация карточек услуг ---
+    services_animated = models.BooleanField('Услуги: анимированные (движущиеся) карточки', default=False)
+    services_speed = models.PositiveIntegerField('Услуги: длительность прокрутки, сек', default=40)
+
+    # --- Анимация отзывов (карусель) ---
+    reviews_animated = models.BooleanField('Отзывы: движущаяся карусель', default=True)
+    reviews_speed = models.PositiveIntegerField('Отзывы: длительность прокрутки, сек', default=50)
+
+    # --- Анимация новостей (карусель) ---
+    news_animated = models.BooleanField('Новости: движущаяся карусель', default=True)
+    news_speed = models.PositiveIntegerField('Новости: длительность прокрутки, сек', default=45)
+
+    # --- Нижняя панель быстрых ссылок ---
+    quicklinks_enabled = models.BooleanField('Нижняя панель быстрых ссылок: включена', default=True)
+
+    # --- Вакансии ---
+    vacancies_kicker = models.CharField('Вакансии · надзаголовок', max_length=80, default='Вакансии')
+    vacancies_title = models.CharField('Вакансии · заголовок', max_length=200, default='Открытые вакансии')
+
+    # --- Видимость разделов (скрыть/показать) ---
+    show_news = models.BooleanField('Раздел «Новости»', default=True)
+    show_important = models.BooleanField('Раздел «Важное»', default=True)
+    show_vacancies = models.BooleanField('Раздел «Вакансии»', default=False)
+    show_about = models.BooleanField('Раздел «О компании»', default=True)
+    show_facts = models.BooleanField('Раздел «Факты»', default=True)
+    show_pains = models.BooleanField('Раздел «Типовые ситуации»', default=True)
+    show_services = models.BooleanField('Раздел «Услуги»', default=True)
+    show_process = models.BooleanField('Раздел «Как мы работаем»', default=True)
+    show_cases = models.BooleanField('Раздел «Кейсы»', default=True)
+    show_pricing = models.BooleanField('Раздел «Тарифы»', default=True)
+    show_reviews = models.BooleanField('Раздел «Отзывы»', default=True)
+    show_faq = models.BooleanField('Раздел «FAQ»', default=True)
+    show_contact = models.BooleanField('Раздел «Контакты»', default=True)
 
     class Meta:
         verbose_name = 'Настройки сайта'
@@ -332,3 +401,176 @@ class FAQ(OrderedItem):
 
     def __str__(self):
         return self.question
+
+
+# ============================================================
+#  Новости
+# ============================================================
+class NewsSource(models.Model):
+    """Источник для автозагрузки новостей (RSS/Atom). Загрузка — командой fetch_news."""
+    name = models.CharField('Название источника', max_length=120)
+    feed_url = models.URLField('URL ленты (RSS/Atom)')
+    is_active = models.BooleanField('Активен', default=True)
+    last_fetched = models.DateTimeField('Последняя загрузка', null=True, blank=True)
+
+    class Meta:
+        verbose_name = 'Источник новостей'
+        verbose_name_plural = 'Источники новостей (автозагрузка)'
+
+    def __str__(self):
+        return self.name
+
+
+class News(models.Model):
+    """Новость. Может быть добавлена вручную или загружена из источника."""
+    title = models.CharField('Заголовок', max_length=200)
+    slug = models.SlugField('Адрес (ЧПУ)', max_length=220, unique=True, blank=True,
+                            help_text='Оставьте пустым — сгенерируется автоматически')
+    excerpt = models.CharField('Краткое описание', max_length=300, blank=True)
+    body = models.TextField('Текст новости', blank=True)
+    image = models.ImageField('Изображение', upload_to='news/', blank=True, null=True)
+
+    source = models.ForeignKey(NewsSource, verbose_name='Источник', on_delete=models.SET_NULL,
+                               null=True, blank=True, related_name='items')
+    source_url = models.URLField('Ссылка на первоисточник', blank=True)
+
+    published_at = models.DateTimeField('Дата публикации', default=timezone.now)
+    is_pinned = models.BooleanField('Закрепить', default=False)
+    is_active = models.BooleanField('Показывать', default=True)
+    created_at = models.DateTimeField('Создана', auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Новость'
+        verbose_name_plural = 'Новости'
+        ordering = ['-is_pinned', '-published_at', '-id']
+
+    def __str__(self):
+        return self.title
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            base = ru_slugify(self.title)
+            slug = base
+            n = 2
+            while News.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+                slug = f'{base}-{n}'
+                n += 1
+            self.slug = slug
+        super().save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return reverse('news_detail', args=[self.slug])
+
+
+# ============================================================
+#  Раздел «Важное»
+# ============================================================
+class ImportantItem(OrderedItem):
+    title = models.CharField('Заголовок', max_length=160)
+    text = models.CharField('Текст', max_length=300, blank=True)
+    link = models.CharField('Ссылка (необязательно)', max_length=255, blank=True)
+
+    class Meta(OrderedItem.Meta):
+        verbose_name = 'Важное'
+        verbose_name_plural = 'Важное'
+
+    def __str__(self):
+        return self.title
+
+
+# ============================================================
+#  Движущаяся информационная лента
+# ============================================================
+class TickerItem(OrderedItem):
+    CATEGORY_CHOICES = [
+        ('news', 'Новость'),
+        ('important', 'Важное'),
+        ('announcement', 'Объявление'),
+        ('promo', 'Акция'),
+    ]
+    category = models.CharField('Категория', max_length=20, choices=CATEGORY_CHOICES, default='news')
+    text = models.CharField('Текст', max_length=200)
+    link = models.CharField('Ссылка (необязательно)', max_length=255, blank=True)
+
+    class Meta(OrderedItem.Meta):
+        verbose_name = 'Элемент ленты'
+        verbose_name_plural = 'Лента (бегущая строка)'
+
+    def __str__(self):
+        return f'[{self.get_category_display()}] {self.text}'
+
+
+# ============================================================
+#  Быстрые ссылки (нижняя панель)
+# ============================================================
+class QuickLink(OrderedItem):
+    KIND_CHOICES = [
+        ('instagram', 'Instagram'),
+        ('facebook', 'Facebook'),
+        ('telegram', 'Telegram'),
+        ('whatsapp', 'WhatsApp'),
+        ('phone', 'Телефон'),
+        ('email', 'Email'),
+        ('address', 'Адрес (2ГИС)'),
+    ]
+    kind = models.CharField('Тип', max_length=20, choices=KIND_CHOICES)
+    value = models.CharField(
+        'Значение', max_length=255,
+        help_text='Instagram/Facebook/Telegram — ссылка на страницу; WhatsApp/Телефон — номер; '
+                  'Email — почта; Адрес — ссылка 2ГИС или текст адреса')
+    custom_icon = models.ImageField('Своя иконка (необязательно)', upload_to='icons/', blank=True, null=True)
+
+    class Meta(OrderedItem.Meta):
+        verbose_name = 'Быстрая ссылка'
+        verbose_name_plural = 'Быстрые ссылки (нижняя панель)'
+
+    def __str__(self):
+        return f'{self.get_kind_display()}: {self.value}'
+
+    @property
+    def href(self):
+        v = (self.value or '').strip()
+        k = self.kind
+        if k == 'whatsapp':
+            return 'https://wa.me/' + re.sub(r'\D', '', v)
+        if k == 'phone':
+            return 'tel:' + re.sub(r'[^\d+]', '', v)
+        if k == 'email':
+            return 'mailto:' + v
+        if k == 'telegram':
+            if v.startswith('http'):
+                return v
+            return 'https://t.me/' + v.lstrip('@')
+        if k == 'address':
+            if v.startswith('http'):
+                return v
+            return 'https://2gis.kg/search/' + quote(v)
+        # instagram / facebook — ожидаем полную ссылку
+        return v
+
+    @property
+    def is_external(self):
+        return self.kind not in ('phone', 'email')
+
+    @property
+    def label(self):
+        return self.get_kind_display()
+
+
+# ============================================================
+#  Вакансии
+# ============================================================
+class Vacancy(OrderedItem):
+    title = models.CharField('Должность', max_length=160)
+    location = models.CharField('Локация', max_length=120, blank=True)
+    employment = models.CharField('Занятость', max_length=120, blank=True,
+                                  help_text='Например: полная, удалённо')
+    salary = models.CharField('Зарплата', max_length=120, blank=True)
+    description = models.TextField('Описание', blank=True)
+
+    class Meta(OrderedItem.Meta):
+        verbose_name = 'Вакансия'
+        verbose_name_plural = 'Вакансии'
+
+    def __str__(self):
+        return self.title
